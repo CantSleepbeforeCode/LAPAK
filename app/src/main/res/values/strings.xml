@@ -43,4 +43,6 @@
     <string name="police_number">Police Number</string>
     <string name="done">Done</string>
     <string name="vehicle_added">Your vehicle have been added</string>
+    <string name="no_vehicle_found">No Vehicle Found.</string>
+    <string name="check_out">Check Out</string>
 </resources>

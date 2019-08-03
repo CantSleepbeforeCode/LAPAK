@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.dsc.lapak.R;
-import com.dsc.lapak.database.SqliteHelper;
+import com.dsc.lapak.database.UserHelper;
 import com.dsc.lapak.entity.User;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
@@ -22,14 +22,14 @@ public class SignUpActivity extends AppCompatActivity {
     TextInputLayout layoutName, layoutEmail, layoutPassword;
     EditText inputName, inputEmail, inputPassword;
     Button buttonRegister;
-    SqliteHelper sqliteHelper;
+    UserHelper userHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        sqliteHelper = new SqliteHelper(this);
+        userHelper = new UserHelper(this);
 
         layoutName = findViewById(R.id.layout_name);
         layoutEmail = findViewById(R.id.layout_email);
@@ -52,8 +52,8 @@ public class SignUpActivity extends AppCompatActivity {
 
 //                    Cek kalo datanya udah ada atau ga
 
-                    if (!sqliteHelper.isEmailExists(txtEmail)) {
-                        sqliteHelper.addUser(new User(null, txtName, txtEmail, txtPassword));
+                    if (!userHelper.isEmailExists(txtEmail, getApplicationContext())) {
+                        userHelper.insert(new User(null, txtName, "member", "0", txtEmail, txtPassword));
                         new Handler().postDelayed(new Runnable() {
                             public void run() {
                                 Intent login = new Intent(getApplicationContext(), LoginActivity.class);
@@ -74,6 +74,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     public boolean validate() {
         boolean valid = false;
+        int score = 1;
 
         String txtName = inputName.getText().toString();
         String txtEmail = inputEmail.getText().toString();
@@ -88,7 +89,7 @@ public class SignUpActivity extends AppCompatActivity {
                 valid = true;
                 inputName.setError(null);
             } else {
-                valid = false;
+                score = 0;
                 inputName.setError(getString(R.string.error_length_name));
             }
         }
@@ -98,7 +99,11 @@ public class SignUpActivity extends AppCompatActivity {
             valid = false;
             inputEmail.setError(getString(R.string.error_email));
         } else {
-            valid = true;
+            if (score == 0) {
+                valid = false;
+            } else {
+                valid = true;
+            }
             inputEmail.setError(null);
         }
 
@@ -111,7 +116,11 @@ public class SignUpActivity extends AppCompatActivity {
                 valid = false;
                 inputPassword.setError(getString(R.string.error_password_length));
             } else {
-                valid = true;
+                if (score == 0) {
+                    valid = false;
+                } else {
+                    valid = true;
+                }
                 inputPassword.setError(null);
             }
         }

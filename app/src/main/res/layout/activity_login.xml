@@ -73,7 +73,9 @@
             android:layout_marginBottom="8dp"
             android:textColorHint="@android:color/white"
             app:boxStrokeColor="@android:color/white"
-            app:hintTextAppearance="@style/TextAppearance.AppCompat.Inverse">
+            app:hintTextAppearance="@style/TextAppearance.AppCompat.Inverse"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@android:color/white">
 
             <EditText
                 android:id="@+id/ipt_pass"

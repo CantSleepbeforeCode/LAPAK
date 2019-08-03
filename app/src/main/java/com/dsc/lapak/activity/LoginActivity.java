@@ -13,7 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dsc.lapak.R;
-import com.dsc.lapak.database.SqliteHelper;
+import com.dsc.lapak.database.UserHelper;
 import com.dsc.lapak.entity.User;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
@@ -24,14 +24,14 @@ public class LoginActivity extends AppCompatActivity {
     TextInputLayout textInputLayoutEmail, textInputLayoutPassword;
     Button buttonLogin;
     ProgressBar progressBar;
-    SqliteHelper sqliteHelper;
+    UserHelper userHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        sqliteHelper = new SqliteHelper(this);
+        userHelper = new UserHelper(this);
         initCreateAccountTextView();
 
         editTextEmail = findViewById(R.id.ipt_username);
@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar_login);
         buttonLogin = findViewById(R.id.btn_login);
 
-        editTextEmail.setText("a@gmail.com");
+        editTextEmail.setText("kangparkir@gmail.com");
         editTextPassword.setText("123456");
 
         // atur klik event tombol login
@@ -57,14 +57,31 @@ public class LoginActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.VISIBLE);
 
                     // validasi user
-                    User currentUser = sqliteHelper.Authenticate(new User(null, null, Email, Password));
+                    User currentUser = userHelper.Authenticate(new User(null, null, null, null, Email, Password), getApplicationContext());
 
                     // cek validasinya berhasil atau ga
                     if(currentUser != null){
                         new Handler().postDelayed(new Runnable() {
                             public void run() {
-                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                intent.putExtra("KEY_NAME", sqliteHelper.nameUser);
+                                Intent intent = new Intent();
+                                if (userHelper.userLevel.equals("member")) {
+                                    intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                    intent.putExtra("KEY_ID", userHelper.idUser);
+                                    intent.putExtra("KEY_NAME", userHelper.nameUser);
+                                    intent.putExtra("KEY_LEVEL", userHelper.userLevel);
+                                    intent.putExtra("KEY_BALANCE", userHelper.userBalance);
+                                    intent.putExtra("KEY_EMAIL", userHelper.emailUser);
+                                    intent.putExtra("KEY_PASSWORD", userHelper.passwordUser);
+
+                                } else if (userHelper.userLevel.equals("mitra")) {
+                                    intent = new Intent(LoginActivity.this, MitraActivity.class);
+                                    intent.putExtra("KEY_ID", userHelper.idUser);
+                                    intent.putExtra("KEY_NAME", userHelper.nameUser);
+                                    intent.putExtra("KEY_LEVEL", userHelper.userLevel);
+                                    intent.putExtra("KEY_BALANCE", userHelper.userBalance);
+                                    intent.putExtra("KEY_EMAIL", userHelper.emailUser);
+                                    intent.putExtra("KEY_PASSWORD", userHelper.passwordUser);
+                                }
                                 startActivity(intent);
                                 finish();
                             }

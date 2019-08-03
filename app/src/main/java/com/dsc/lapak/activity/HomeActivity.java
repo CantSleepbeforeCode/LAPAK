@@ -25,6 +25,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     TextView helloUser;
 
     private String KEY_NAME = "USER_NAME";
+    private String KEY_LEVEL = "KEY_LEVEL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

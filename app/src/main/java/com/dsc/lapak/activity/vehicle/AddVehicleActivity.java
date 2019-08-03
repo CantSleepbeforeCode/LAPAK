@@ -15,12 +15,9 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.dsc.lapak.R;
-import com.dsc.lapak.activity.LoginActivity;
-import com.dsc.lapak.database.SqliteHelper;
-import com.dsc.lapak.entity.User;
+import com.dsc.lapak.database.VehicleHelper;
 import com.dsc.lapak.entity.Vehicle;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class AddVehicleActivity extends AppCompatActivity {
@@ -30,12 +27,14 @@ public class AddVehicleActivity extends AppCompatActivity {
     RadioGroup radioGroupVehicle;
     RadioButton radioButtonVehicle;
 
-    SqliteHelper sqliteHelper;
+    VehicleHelper vehicleHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_vehicle);
+
+        vehicleHelper = new VehicleHelper(this);
 
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -50,17 +49,19 @@ public class AddVehicleActivity extends AppCompatActivity {
         buttonVehicle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String txtNoPolice = inputNoPolice.getText().toString().trim();
+                String txtNoPolice = inputNoPolice.getText().toString().trim().toUpperCase();
+                Log.d("isi", txtNoPolice);
                 if (validate()) {
-                    if (!sqliteHelper.isNoPoliceExist(txtNoPolice)) {
+                    if (!vehicleHelper.isNoPoliceExist(txtNoPolice, getApplicationContext())) {
                         int idRadio = radioGroupVehicle.getCheckedRadioButtonId();
                         radioButtonVehicle = findViewById(idRadio);
-                        sqliteHelper.addVehicle(new Vehicle(null, String.valueOf(radioButtonVehicle.getText()), txtNoPolice));
+                        vehicleHelper.insert(new Vehicle(null, String.valueOf(radioButtonVehicle.getText()), txtNoPolice));
                         Snackbar.make(buttonVehicle, getString(R.string.vehicle_added), Snackbar.LENGTH_LONG).show();
                         new Handler().postDelayed(new Runnable() {
                             public void run() {
                                 Intent success = new Intent(getApplicationContext(), MyVehicleActivity.class);
                                 startActivity(success);
+                                finish();
                             }
                         }, 3000);
                     } else {
@@ -88,7 +89,6 @@ public class AddVehicleActivity extends AppCompatActivity {
         } else {
             valid = true;
         }
-        Log.d("valid", String.valueOf(valid));
         return valid;
     }
 }
